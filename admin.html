@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Panel — Christin Edward</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+/* ── Admin-only extended styles ── */
+*{box-sizing:border-box}
+.adm-wrap{display:flex;min-height:100vh;padding-top:var(--nav-h)}
+/* Sidebar */
+.adm-sidebar{
+  width:260px;flex-shrink:0;background:var(--panel);
+  border-right:1px solid var(--gold-line);
+  position:fixed;top:var(--nav-h);bottom:0;left:0;
+  overflow-y:auto;z-index:100;
+  display:flex;flex-direction:column;
+}
+.adm-sidebar::-webkit-scrollbar{width:4px}
+.adm-sidebar::-webkit-scrollbar-thumb{background:var(--gold-line);border-radius:2px}
+.adm-main{margin-left:260px;flex:1;padding:36px 40px 80px;background:var(--void);min-height:calc(100vh - var(--nav-h))}
+/* Sidebar user badge */
+.sb-user{padding:20px 20px 16px;border-bottom:1px solid var(--gold-line)}
+.sb-user-name{font-family:var(--ff-ui);font-size:.95rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t1)}
+.sb-user-role{font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-top:3px}
+.sb-user-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;animation:ripple2 2s infinite}
+@keyframes ripple2{0%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+/* Sidebar nav groups */
+.sb-group-label{font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;color:var(--t4);padding:16px 20px 6px}
+.sb-link{
+  display:flex;align-items:center;gap:10px;padding:10px 20px;
+  font-size:.88rem;color:var(--t2);cursor:pointer;transition:var(--tr);
+  border:none;background:none;width:100%;text-align:left;font-family:var(--ff-ui);
+  border-left:2px solid transparent;text-decoration:none;
+}
+.sb-link:hover{background:var(--gold-dim);color:var(--t1)}
+.sb-link.active{background:var(--gold-dim);color:var(--gold);border-left-color:var(--gold)}
+.sb-link svg{width:15px;height:15px;flex-shrink:0}
+.sb-divider{height:1px;background:var(--gold-line);margin:10px 0}
+.sb-logout-btn{color:var(--red)!important}
+.sb-logout-btn:hover{background:rgba(239,68,68,.08)!important;color:var(--red)!important}
+/* Sections */
+.sec{display:none}.sec.active{display:block}
+.sec-hd{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--gold-line);display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.sec-hd-left h2{font-family:var(--ff-display);font-size:2rem;font-weight:300;line-height:1;margin-bottom:6px}
+.sec-hd-left p{font-size:.88rem;color:var(--t2)}
+/* Stats bar */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px}
+.stat-box{background:var(--panel);border:1px solid var(--gold-line);border-radius:var(--r2);padding:20px;transition:var(--tr)}
+.stat-box:hover{border-color:rgba(212,168,67,.3)}
+.stat-box-val{font-family:var(--ff-display);font-size:1.8rem;font-weight:300;color:var(--gold);line-height:1;margin-bottom:5px}
+.stat-box-lbl{font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--t3)}
+/* Cards / Panels */
+.card{background:var(--panel);border:1px solid var(--gold-line);border-radius:var(--r3);overflow:hidden;margin-bottom:22px}
+.card-hd{padding:18px 24px;border-bottom:1px solid var(--gold-line);background:rgba(0,0,0,.18);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-hd-title{font-family:var(--ff-ui);font-size:.92rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.card-hd-title svg{width:16px;height:16px;color:var(--gold)}
+.card-body{padding:24px}
+/* Forms */
+.fg{margin-bottom:18px}
+.fg label{display:block;font-family:var(--ff-mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;color:var(--t2);margin-bottom:8px}
+.fg label span{color:var(--gold)}
+.fi,.fta,.fse{width:100%;background:var(--elevated);border:1px solid var(--gold-line);border-radius:var(--r);padding:11px 14px;font-family:var(--ff-ui);font-size:.92rem;color:var(--t1);transition:var(--tr);outline:none;-webkit-appearance:none}
+.fi:focus,.fta:focus,.fse:focus{border-color:var(--gold);background:var(--card);box-shadow:0 0 0 3px rgba(212,168,67,.08)}
+.fi::placeholder,.fta::placeholder{color:var(--t3)}
+.fta{min-height:90px;resize:vertical;line-height:1.6}
+.fse option{background:var(--panel);color:var(--t1)}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+/* Image upload */
+.img-upload-zone{border:2px dashed rgba(212,168,67,.22);border-radius:var(--r3);padding:28px 20px;text-align:center;cursor:pointer;transition:var(--tr);background:rgba(212,168,67,.015);position:relative}
+.img-upload-zone:hover{border-color:var(--gold);background:var(--gold-dim)}
+.img-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.img-upload-zone .up-icon{width:32px;height:32px;color:var(--gold);margin:0 auto 12px}
+.img-upload-zone .up-txt{font-size:.88rem;color:var(--t2);margin-bottom:5px}
+.img-upload-zone .up-hint{font-family:var(--ff-mono);font-size:.6rem;color:var(--t3);letter-spacing:.1em}
+/* Image preview */
+.img-preview-wrap{margin-top:12px;display:none;position:relative}
+.img-preview-wrap.show{display:block}
+.img-preview-wrap img{width:100%;border-radius:var(--r2);border:1px solid var(--gold-line);display:block;max-height:240px;object-fit:cover}
+.img-preview-wrap.portrait-mode img{max-height:300px;object-fit:cover;object-position:top}
+.img-preview-remove{position:absolute;top:8px;right:8px;background:rgba(6,8,12,.88);border:1px solid rgba(239,68,68,.3);border-radius:var(--r);padding:5px 10px;font-family:var(--ff-mono);font-size:.6rem;color:var(--red);cursor:pointer;transition:var(--tr)}
+.img-preview-remove:hover{background:rgba(239,68,68,.15)}
+/* Drive helper */
+.dh{background:rgba(66,133,244,.05);border:1px solid rgba(66,133,244,.2);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px}
+.dh-title{font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:#4285f4;margin-bottom:6px}
+.dh p{font-size:.82rem;color:var(--t2);line-height:1.7;margin:0}
+/* Link confirmed */
+.link-ok{margin-top:8px;padding:9px 13px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:var(--r);display:none;align-items:center;gap:8px;font-family:var(--ff-mono);font-size:.63rem;color:var(--green);letter-spacing:.08em}
+.link-ok.show{display:flex}
+.link-ok svg{width:13px;height:13px;flex-shrink:0}
+/* Source tabs */
+.src-tabs{display:flex;border-bottom:1px solid var(--gold-line);margin-bottom:16px}
+.src-tab{font-family:var(--ff-mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);padding:10px 18px;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:var(--tr)}
+.src-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.src-panel{display:none}.src-panel.active{display:block}
+/* Audio preview */
+.audio-prev{margin-top:10px;display:none}
+.audio-prev.show{display:block}
+.audio-prev audio{width:100%;height:34px;border-radius:4px}
+/* Project list rows */
+.prow{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--elevated);border:1px solid var(--gold-line);border-radius:var(--r);margin-bottom:8px;transition:var(--tr)}
+.prow:hover{border-color:rgba(212,168,67,.28)}
+.prow-ico{width:32px;height:32px;border-radius:var(--r);background:var(--gold-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.prow-ico svg{width:14px;height:14px;color:var(--gold)}
+.prow-ico.red{background:rgba(239,68,68,.1)}.prow-ico.red svg{color:var(--red)}
+.prow-info{flex:1;min-width:0}
+.prow-name{font-size:.9rem;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prow-meta{font-family:var(--ff-mono);font-size:.58rem;color:var(--t3);letter-spacing:.08em;margin-top:2px}
+.prow-thumb{width:48px;height:32px;border-radius:var(--r);overflow:hidden;flex-shrink:0}
+.prow-thumb img{width:100%;height:100%;object-fit:cover}
+.prow-acts{display:flex;gap:6px;flex-shrink:0}
+.act{width:28px;height:28px;border-radius:var(--r);border:1px solid var(--gold-line);background:transparent;color:var(--t3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr)}
+.act:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+.act.del:hover{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.08)}
+.act svg{width:12px;height:12px}
+/* Badge */
+.bdg{font-family:var(--ff-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:2px;flex-shrink:0}
+.bdg-pub{color:var(--green);background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2)}
+.bdg-draft{color:var(--t3);background:rgba(255,255,255,.04);border:1px solid var(--gold-line)}
+/* Empty */
+.empty{text-align:center;padding:40px 20px;border:1px dashed var(--gold-line);border-radius:var(--r3);background:rgba(212,168,67,.01)}
+.empty svg{width:36px;height:36px;color:var(--t4);margin:0 auto 12px}
+.empty p{font-size:.88rem;color:var(--t3)}
+/* Skill row */
+.skill-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(212,168,67,.06)}
+.skill-row:last-child{border-bottom:none}
+.skill-row .fi{flex:1}
+.skill-row .fi.pct{width:80px;flex:0 0 80px}
+/* Timeline item editor */
+.tl-editor-item{background:var(--elevated);border:1px solid var(--gold-line);border-radius:var(--r2);padding:18px;margin-bottom:14px;position:relative}
+.tl-del{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:var(--r);border:1px solid var(--gold-line);background:transparent;color:var(--t3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr)}
+.tl-del:hover{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.08)}
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--elevated);border:1px solid var(--gold-line);border-left:3px solid var(--gold);border-radius:var(--r2);padding:13px 18px;font-size:.9rem;color:var(--t1);display:flex;align-items:center;gap:11px;transform:translateY(80px);opacity:0;transition:all .35s var(--ease);pointer-events:none;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{border-left-color:var(--green)}
+.toast.err{border-left-color:var(--red)}
+/* Modal */
+.modal-bg{position:fixed;inset:0;z-index:5000;background:rgba(6,8,12,.92);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--panel);border:1px solid var(--gold-line);border-radius:var(--r3);width:100%;max-width:600px;overflow:hidden;margin:auto}
+.modal-hd{padding:20px 24px;border-bottom:1px solid var(--gold-line);background:rgba(0,0,0,.2);display:flex;align-items:center;justify-content:space-between}
+.modal-hd h3{font-family:var(--ff-ui);font-size:.95rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.modal-close{background:none;border:none;color:var(--t2);cursor:pointer;padding:4px}
+.modal-body{padding:26px 24px}
+/* Save bar */
+.save-bar{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-top:20px;padding-top:20px;border-top:1px solid var(--gold-line)}
+/* Profile photo circle */
+.profile-photo-wrap{display:flex;align-items:flex-start;gap:24px;margin-bottom:20px}
+.profile-photo-current{width:120px;height:160px;border-radius:var(--r2);border:1px solid var(--gold-line);overflow:hidden;flex-shrink:0;background:var(--elevated)}
+.profile-photo-current img{width:100%;height:100%;object-fit:cover;object-position:top}
+/* Responsive */
+@media(max-width:900px){
+  .adm-sidebar{width:200px}
+  .adm-main{margin-left:200px;padding:24px 22px 60px}
+  .stats-row{grid-template-columns:repeat(3,1fr)}
+  .f2,.f3{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+  .adm-sidebar{position:static;width:100%;border-right:none;border-bottom:1px solid var(--gold-line)}
+  .adm-main{margin-left:0}
+  .adm-wrap{flex-direction:column}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24"><rect x="2" y="9" width="2" height="6"/><rect x="6" y="5" width="2" height="14"/><rect x="10" y="2" width="2" height="20"/><rect x="14" y="5" width="2" height="14"/><rect x="18" y="9" width="2" height="6"/></svg></div>
+      <div class="logo-text"><span class="logo-name">Christin Edward</span><span class="logo-role">Audio Engineer</span></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="portfolio.html">Portfolio</a></li>
+      <li><a href="admin.html" class="nav-cta active">Admin</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ════ LOGIN PAGE ════════════════════════════════════════════ -->
+<div id="loginPage" class="login-page" style="display:none">
+  <div class="login-bg"></div><div class="login-grid-bg"></div>
+  <div class="login-box">
+    <div class="login-header">
+      <div class="login-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h1>Admin Access</h1>
+      <p>Restricted — authorised personnel only</p>
+    </div>
+    <div class="login-body">
+      <div class="login-err" id="loginErr">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="loginErrMsg">Invalid credentials.</span>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Username <span>*</span></label>
+        <input class="f-input" type="text" id="loginUser" placeholder="Enter username" autocomplete="off" autocapitalize="none"/>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Password <span>*</span></label>
+        <input class="f-input" type="password" id="loginPass" placeholder="Enter password"/>
+      </div>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;margin-top:4px" onclick="doLogin()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Sign In
+      </button>
+      <p style="text-align:center;margin-top:16px;font-size:.8rem;color:var(--t3)">Authorised personnel only.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ADMIN PANEL ════════════════════════════════════════════ -->
+<div id="adminPage" style="display:none">
+<div class="adm-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="adm-sidebar">
+    <div class="sb-user">
+      <div class="sb-user-name"><span class="sb-user-dot"></span>Edward</div>
+      <div class="sb-user-role">Site Administrator</div>
+    </div>
+
+    <div class="sb-group-label">Overview</div>
+    <button class="sb-link active" onclick="goSec('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
+    </button>
+
+    <div class="sb-group-label">Site Content</div>
+    <button class="sb-link" onclick="goSec('editProfile',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile &amp; Photo
+    </button>
+    <button class="sb-link" onclick="goSec('editHero',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>Hero Section
+    </button>
+    <button class="sb-link" onclick="goSec('editAbout',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>About &amp; Bio
+    </button>
+    <button class="sb-link" onclick="goSec('editSkills',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Skills
+    </button>
+    <button class="sb-link" onclick="goSec('editTimeline',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Experience
+    </button>
+    <button class="sb-link" onclick="goSec('editContact',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l.94-.94a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 17z"/></svg>Contact Info
+    </button>
+
+    <div class="sb-group-label">Portfolio</div>
+    <button class="sb-link" onclick="goSec('addAudio',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Add Audio
+    </button>
+    <button class="sb-link" onclick="goSec('addVideo',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Add Video
+    </button>
+    <button class="sb-link" onclick="goSec('manageAudio',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Manage Audio
+    </button>
+    <button class="sb-link" onclick="goSec('manageVideo',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Manage Video
+    </button>
+
+    <div class="sb-divider"></div>
+    <a href="index.html" target="_blank" class="sb-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>View Live Site
+    </a>
+    <button class="sb-link sb-logout-btn" onclick="doLogout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out
+    </button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="adm-main">
+
+    <!-- ── DASHBOARD ─────────────────────────────────────────── -->
+    <section class="sec active" id="sec-dashboard">
+      <div class="sec-hd">
+        <div class="sec-hd-left">
+          <h2>Dashboard</h2>
+          <p>Overview of your portfolio site</p>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-box-val" id="st-audio">0</div><div class="stat-box-lbl">Audio Projects</div></div>
+        <div class="stat-box"><div class="stat-box-val" id="st-video">0</div><div class="stat-box-lbl">Video Projects</div></div>
+        <div class="stat-box"><div class="stat-box-val" id="st-pub">0</div><div class="stat-box-lbl">Published</div></div>
+        <div class="stat-box"><div class="stat-box-val" id="st-draft">0</div><div class="stat-box-lbl">Drafts</div></div>
+        <div class="stat-box"><div class="stat-box-val" id="st-skills">0</div><div class="stat-box-lbl">Skills Listed</div></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>What You Can Edit</div></div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">
+            <div style="background:var(--elevated);border:1px solid var(--gold-line);border-radius:var(--r2);padding:16px">
+              <div style="font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Profile &amp; Photo</div>
+              <p style="font-size:.84rem;color:var(--t2);line-height:1.7">Update your name, title, profile photo and portrait image shown on the About page.</p>
+            </div>
+            <div style="background:var(--elevated);border:1px solid var(--gold-line);border-radius:var(--r2);padding:16px">
+              <div style="font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Hero Section</div>
+              <p style="font-size:.84rem;color:var(--t2);line-height:1.7">Edit homepage headline, tagline, description text and hero statistics.</p>
+            </div>
+            <div style="background:var(--elevated);border:1px solid var(--gold-line);border-radius:var(--r2);padding:16px">
+              <div style="font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">About &amp; Bio</div>
+              <p style="font-size:.84rem;color:var(--t2);line-height:1.7">Update your professional summary, achievement text, and bio paragraphs.</p>
+            </div>
+            <div style="background:var(--elevated);border:1px solid var(--gold-line);border-radius:var(--r2);padding:16px">
+              <div style="font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Skills</div>
+              <p style="font-size:.84rem;color:var(--t2);line-height:1.7">Add, edit or remove technical skills with proficiency levels.</p>
+            </div>
+            <div style="background:var(--elevated);border:1px solid var(--gold-line);border-radius:var(--r2);padding:16px">
+              <div style="font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Experience</div>
+              <p style="font-size:.84rem;color:var(--t2);line-height:1.7">Manage your career timeline — add, edit or remove experience entries.</p>
+            </div>
+            <div style="background:var(--elevated);border:1px solid var(--gold-line);border-radius:var(--r2);padding:16px">
+              <div style="font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Audio &amp; Video</div>
+              <p style="font-size:.84rem;color:var(--t2);line-height:1.7">Add portfolio projects using Google Drive links. Upload thumbnails for video cards.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PROFILE & PHOTO ────────────────────────────────────── -->
+    <section class="sec" id="sec-editProfile">
+      <div class="sec-hd">
+        <div class="sec-hd-left"><h2>Profile &amp; Photo</h2><p>Update your name, title, and profile portrait photo</p></div>
+        <button class="btn btn-gold btn-sm" onclick="saveProfile()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Profile
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Personal Details</div></div>
+        <div class="card-body">
+          <div class="f2">
+            <div class="fg"><label>Full Name <span>*</span></label><input class="fi" id="p-name" placeholder="e.g. Christin Edward"/></div>
+            <div class="fg"><label>Professional Title <span>*</span></label><input class="fi" id="p-title" placeholder="e.g. Audio Engineer"/></div>
+          </div>
+          <div class="f2">
+            <div class="fg"><label>Tagline / Subtitle</label><input class="fi" id="p-tagline" placeholder="e.g. Sound designer. Dubbing engineer."/></div>
+            <div class="fg"><label>Availability Status</label><input class="fi" id="p-avail" placeholder="e.g. Available for Projects"/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Profile / Portrait Photo</div></div>
+        <div class="card-body">
+          <p style="font-size:.86rem;color:var(--t2);margin-bottom:16px">This photo is displayed on the About page. Recommended: portrait orientation (3:4 ratio).</p>
+          <div class="profile-photo-wrap">
+            <div class="profile-photo-current">
+              <img id="p-photo-current" src="" alt="Current photo" onerror="this.style.display='none'"/>
+            </div>
+            <div style="flex:1">
+              <div class="img-upload-zone" onclick="document.getElementById('p-photo-input').click()">
+                <input type="file" id="p-photo-input" accept=".jpg,.jpeg,.png,.webp" onchange="handleProfilePhoto(this)" style="display:none"/>
+                <svg class="up-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <p class="up-txt">Click to upload new photo</p>
+                <p class="up-hint">JPG, PNG, WebP · Max 5MB · Portrait recommended</p>
+              </div>
+              <div class="img-preview-wrap portrait-mode" id="p-photo-preview">
+                <img id="p-photo-preview-img" src="" alt="New photo preview"/>
+                <button class="img-preview-remove" onclick="removeProfilePhoto()">✕ Remove</button>
+              </div>
+            </div>
+          </div>
+          <div class="save-bar">
+            <button class="btn btn-ghost btn-sm" onclick="loadProfileForm()">Reset</button>
+            <button class="btn btn-gold btn-sm" onclick="saveProfile()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HERO SECTION ───────────────────────────────────────── -->
+    <section class="sec" id="sec-editHero">
+      <div class="sec-hd">
+        <div class="sec-hd-left"><h2>Hero Section</h2><p>Edit the main homepage headline and statistics</p></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>Headline &amp; Description</div></div>
+        <div class="card-body">
+          <div class="f3">
+            <div class="fg"><label>Headline Line 1</label><input class="fi" id="h-l1" placeholder="e.g. SOUND"/></div>
+            <div class="fg"><label>Headline Line 2 (Gold)</label><input class="fi" id="h-l2" placeholder="e.g. CRAFTED"/></div>
+            <div class="fg"><label>Headline Line 3 (Outline)</label><input class="fi" id="h-l3" placeholder="e.g. WITH SOUL"/></div>
+          </div>
+          <div class="fg"><label>Location Tag</label><input class="fi" id="h-loc" placeholder="e.g. Available for Projects — Nagercoil, Tamil Nadu"/></div>
+          <div class="fg"><label>Description Text</label><textarea class="fta" id="h-desc" placeholder="Short intro shown on homepage..."></textarea></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Hero Statistics</div></div>
+        <div class="card-body">
+          <div class="f2">
+            <div class="fg"><label>Stat 1 — Number</label><input class="fi" id="h-s1n" placeholder="e.g. 50+"/></div>
+            <div class="fg"><label>Stat 1 — Label</label><input class="fi" id="h-s1l" placeholder="e.g. Projects Done"/></div>
+          </div>
+          <div class="f2">
+            <div class="fg"><label>Stat 2 — Number</label><input class="fi" id="h-s2n" placeholder="e.g. 30+"/></div>
+            <div class="fg"><label>Stat 2 — Label</label><input class="fi" id="h-s2l" placeholder="e.g. Dubbing Credits"/></div>
+          </div>
+          <div class="f2">
+            <div class="fg"><label>Stat 3 — Number</label><input class="fi" id="h-s3n" placeholder="e.g. 15+"/></div>
+            <div class="fg"><label>Stat 3 — Label</label><input class="fi" id="h-s3l" placeholder="e.g. Short Films"/></div>
+          </div>
+          <div class="f2">
+            <div class="fg"><label>Stat 4 — Number</label><input class="fi" id="h-s4n" placeholder="e.g. 1"/></div>
+            <div class="fg"><label>Stat 4 — Label</label><input class="fi" id="h-s4l" placeholder="e.g. VIT Award"/></div>
+          </div>
+          <div class="save-bar">
+            <button class="btn btn-ghost btn-sm" onclick="loadHeroForm()">Reset</button>
+            <button class="btn btn-gold btn-sm" onclick="saveHero()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Hero
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ABOUT & BIO ────────────────────────────────────────── -->
+    <section class="sec" id="sec-editAbout">
+      <div class="sec-hd">
+        <div class="sec-hd-left"><h2>About &amp; Bio</h2><p>Edit your professional summary and bio text</p></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Bio Content</div></div>
+        <div class="card-body">
+          <div class="fg"><label>Paragraph 1 — Main Summary <span>*</span></label><textarea class="fta" id="ab-p1" style="min-height:110px"></textarea></div>
+          <div class="fg"><label>Paragraph 2</label><textarea class="fta" id="ab-p2"></textarea></div>
+          <div class="fg"><label>Paragraph 3</label><textarea class="fta" id="ab-p3"></textarea></div>
+          <div class="fg"><label>Closing Quote / Statement</label><textarea class="fta" id="ab-quote" style="min-height:70px" placeholder="e.g. serve the emotion, serve the narrative."></textarea></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Achievement / Award Box</div></div>
+        <div class="card-body">
+          <div class="fg"><label>Award Title</label><input class="fi" id="ab-aw-title" placeholder="e.g. 🏆 First Prize — VIT University Short Film Competition"/></div>
+          <div class="fg"><label>Award Description</label><textarea class="fta" id="ab-aw-desc" style="min-height:80px"></textarea></div>
+          <div class="save-bar">
+            <button class="btn btn-ghost btn-sm" onclick="loadAboutForm()">Reset</button>
+            <button class="btn btn-gold btn-sm" onclick="saveAbout()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save About
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SKILLS ─────────────────────────────────────────────── -->
+    <section class="sec" id="sec-editSkills">
+      <div class="sec-hd">
+        <div class="sec-hd-left"><h2>Skills</h2><p>Manage technical skills and proficiency levels</p></div>
+        <button class="btn btn-ghost btn-sm" onclick="addSkillRow()">+ Add Skill</button>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Technical Skills</div></div>
+        <div class="card-body">
+          <div id="skillsContainer"></div>
+          <div class="save-bar">
+            <button class="btn btn-ghost btn-sm" onclick="addSkillRow()">+ Add Skill</button>
+            <button class="btn btn-gold btn-sm" onclick="saveSkills()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Skills
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── EXPERIENCE TIMELINE ────────────────────────────────── -->
+    <section class="sec" id="sec-editTimeline">
+      <div class="sec-hd">
+        <div class="sec-hd-left"><h2>Experience</h2><p>Edit your career timeline entries</p></div>
+        <button class="btn btn-ghost btn-sm" onclick="addTLRow()">+ Add Entry</button>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Career Timeline</div></div>
+        <div class="card-body">
+          <div id="tlContainer"></div>
+          <div class="save-bar">
+            <button class="btn btn-ghost btn-sm" onclick="addTLRow()">+ Add Entry</button>
+            <button class="btn btn-gold btn-sm" onclick="saveTimeline()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Timeline
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CONTACT INFO ───────────────────────────────────────── -->
+    <section class="sec" id="sec-editContact">
+      <div class="sec-hd">
+        <div class="sec-hd-left"><h2>Contact Info</h2><p>Update your contact details shown on all pages</p></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07"/></svg>Contact Details</div></div>
+        <div class="card-body">
+          <div class="f2">
+            <div class="fg"><label>Email Address <span>*</span></label><input class="fi" id="c-email" type="email" placeholder="echristinedward@gmail.com"/></div>
+            <div class="fg"><label>Phone Number <span>*</span></label><input class="fi" id="c-phone" placeholder="+91 97515 94023"/></div>
+          </div>
+          <div class="f2">
+            <div class="fg"><label>Location</label><input class="fi" id="c-loc" placeholder="Nagercoil, Tamil Nadu, India"/></div>
+            <div class="fg"><label>Availability</label><input class="fi" id="c-avail" placeholder="Available for Projects"/></div>
+          </div>
+          <div class="fg"><label>Tools / Software</label><input class="fi" id="c-tools" placeholder="Pro Tools · Logic Pro · Ableton Live"/></div>
+          <div class="save-bar">
+            <button class="btn btn-ghost btn-sm" onclick="loadContactForm()">Reset</button>
+            <button class="btn btn-gold btn-sm" onclick="saveContact()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Contact
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ADD AUDIO ──────────────────────────────────────────── -->
+    <section class="sec" id="sec-addAudio">
+      <div class="sec-hd"><div class="sec-hd-left"><h2>Add Audio Project</h2><p>Add a new audio project to your portfolio</p></div></div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Audio Project Details</div></div>
+        <div class="card-body">
+          <div class="f2">
+            <div class="fg"><label>Project Title <span>*</span></label><input class="fi" id="a-title" placeholder="e.g. Short Film Background Score"/></div>
+            <div class="fg"><label>Category <span>*</span></label>
+              <select class="fse" id="a-cat">
+                <option value="">Select category</option>
+                <option>Dubbing</option><option>Music Production</option><option>SFX Design</option>
+                <option>Mixing</option><option>Mastering</option><option>Sound Design</option>
+                <option>Foley</option><option>Background Score</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="f2">
+            <div class="fg"><label>Duration</label><input class="fi" id="a-dur" placeholder="e.g. 3:42"/></div>
+            <div class="fg"><label>Format</label>
+              <select class="fse" id="a-fmt"><option>MP3</option><option>WAV</option><option>FLAC</option><option>AIFF</option></select>
+            </div>
+          </div>
+          <div class="fg"><label>Description <span>*</span></label><textarea class="fta" id="a-desc" placeholder="Describe the project, your role, and techniques used..."></textarea></div>
+
+          <!-- Audio thumbnail image -->
+          <div class="fg">
+            <label>Project Thumbnail / Cover Image</label>
+            <div class="img-upload-zone" id="aThumbZone" onclick="document.getElementById('a-thumb-input').click()">
+              <input type="file" id="a-thumb-input" accept=".jpg,.jpeg,.png,.webp" onchange="handleAThumb(this)" style="display:none"/>
+              <svg class="up-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <p class="up-txt">Click to upload thumbnail / cover image</p>
+              <p class="up-hint">JPG, PNG, WebP · Max 5MB · Shown on audio card</p>
+            </div>
+            <div class="img-preview-wrap" id="aThumbPreview">
+              <img id="aThumbImg" src="" alt="Audio thumbnail"/>
+              <button class="img-preview-remove" onclick="removeAThumb()">✕ Remove</button>
+            </div>
+          </div>
+
+          <!-- Source -->
+          <div class="fg">
+            <label>Audio Source <span>*</span></label>
+            <div class="src-tabs">
+              <button class="src-tab active" onclick="switchATab('drive',this)">📁 Google Drive Link</button>
+              <button class="src-tab" onclick="switchATab('upload',this)">⬆ Upload File (≤50MB)</button>
+            </div>
+            <div class="src-panel active" id="aTab-drive">
+              <div class="dh"><div class="dh-title">Google Drive</div><p>Upload to Drive → Right-click → Get link → "Anyone with the link" → Copy &amp; paste below.</p></div>
+              <input class="fi" type="url" id="a-drive-link" placeholder="https://drive.google.com/file/d/YOUR_ID/view?usp=sharing" oninput="onALink(this.value)"/>
+              <div class="link-ok" id="a-link-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Link detected</div>
+              <div class="audio-prev" id="a-prev"><p style="font-family:var(--ff-mono);font-size:.6rem;color:var(--t3);letter-spacing:.1em;margin-bottom:8px">PREVIEW</p><audio id="a-prev-el" controls style="width:100%;height:34px;border-radius:4px"></audio></div>
+            </div>
+            <div class="src-panel" id="aTab-upload">
+              <div class="img-upload-zone">
+                <input type="file" id="a-file" accept=".mp3,.wav,.flac,.aiff,.ogg,.m4a" onchange="handleAFile(this)"/>
+                <svg class="up-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <p class="up-txt">Click or drag &amp; drop your audio file</p>
+                <p class="up-hint">MP3, WAV, FLAC · Max 50MB</p>
+                <p id="a-file-name" style="font-family:var(--ff-mono);font-size:.65rem;color:var(--gold);margin-top:8px;display:none"></p>
+              </div>
+              <div class="upload-progress" id="a-prog"><div class="progress-bar"><div class="progress-fill" id="a-prog-fill"></div></div><p class="progress-txt" id="a-prog-txt">Processing...</p></div>
+            </div>
+          </div>
+
+          <div class="f2" style="align-items:end">
+            <div class="fg" style="margin-bottom:0"><label>Status</label><select class="fse" id="a-stat"><option value="published">Published</option><option value="draft">Draft</option></select></div>
+            <div class="save-bar" style="border-top:none;padding-top:0;margin-top:0">
+              <button class="btn btn-ghost btn-sm" onclick="resetAForm()">Reset</button>
+              <button class="btn btn-gold btn-sm" onclick="saveAudio()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Audio
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ADD VIDEO ──────────────────────────────────────────── -->
+    <section class="sec" id="sec-addVideo">
+      <div class="sec-hd"><div class="sec-hd-left"><h2>Add Video Project</h2><p>Add a new video project with Google Drive or YouTube link</p></div></div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Video Project Details</div></div>
+        <div class="card-body">
+          <div class="f2">
+            <div class="fg"><label>Project Title <span>*</span></label><input class="fi" id="v-title" placeholder="e.g. VIT Short Film — First Prize"/></div>
+            <div class="fg"><label>Project Type <span>*</span></label>
+              <select class="fse" id="v-type">
+                <option value="">Select type</option>
+                <option>Short Film</option><option>Feature Film</option><option>Documentary</option>
+                <option>Music Video</option><option>Commercial</option><option>Web Series</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="f3">
+            <div class="fg"><label>Duration</label><input class="fi" id="v-dur" placeholder="e.g. 12:30"/></div>
+            <div class="fg"><label>Year</label><input class="fi" id="v-year" type="number" placeholder="2025" min="2000" max="2099"/></div>
+            <div class="fg"><label>Your Role</label><input class="fi" id="v-role" placeholder="e.g. Sound Designer"/></div>
+          </div>
+          <div class="fg"><label>Description <span>*</span></label><textarea class="fta" id="v-desc" placeholder="Describe the project and your audio contribution..."></textarea></div>
+
+          <!-- Thumbnail upload -->
+          <div class="fg">
+            <label>Thumbnail Image <span style="color:var(--t3);font-size:.55rem">(16:9 recommended)</span></label>
+            <div class="img-upload-zone" id="vThumbZone" onclick="document.getElementById('v-thumb-input').click()">
+              <input type="file" id="v-thumb-input" accept=".jpg,.jpeg,.png,.webp" onchange="handleVThumb(this)" style="display:none"/>
+              <svg class="up-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <p class="up-txt">Click to upload video thumbnail image</p>
+              <p class="up-hint">JPG, PNG, WebP · Max 5MB · 1280×720px recommended</p>
+            </div>
+            <div class="img-preview-wrap" id="vThumbPreview">
+              <img id="vThumbImg" src="" alt="Video thumbnail"/>
+              <button class="img-preview-remove" onclick="removeVThumb()">✕ Remove</button>
+            </div>
+          </div>
+
+          <!-- Drive / YouTube link -->
+          <div class="fg">
+            <label>Google Drive / YouTube Link <span>*</span></label>
+            <div class="dh"><div class="dh-title">Supported Links</div><p>Google Drive: Upload → Get link → "Anyone with the link" → Paste below.<br/>YouTube: Paste full watch URL directly.</p></div>
+            <input class="fi" type="url" id="v-drive-link" placeholder="https://drive.google.com/file/d/... OR https://youtube.com/watch?v=..." oninput="onVLink(this.value)"/>
+            <div class="link-ok" id="v-link-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span id="v-link-ok-txt">Link detected</span></div>
+          </div>
+
+          <div class="f2" style="align-items:end">
+            <div class="fg" style="margin-bottom:0"><label>Status</label><select class="fse" id="v-stat"><option value="published">Published</option><option value="draft">Draft</option></select></div>
+            <div class="save-bar" style="border-top:none;padding-top:0;margin-top:0">
+              <button class="btn btn-ghost btn-sm" onclick="resetVForm()">Reset</button>
+              <button class="btn btn-gold btn-sm" onclick="saveVideo()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save Video
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MANAGE AUDIO ───────────────────────────────────────── -->
+    <section class="sec" id="sec-manageAudio">
+      <div class="sec-hd">
+        <div class="sec-hd-left"><h2>Manage Audio</h2><p>Edit, publish or delete audio projects</p></div>
+        <button class="btn btn-gold btn-sm" onclick="goSec('addAudio',null)">+ Add New</button>
+      </div>
+      <div class="card">
+        <div class="card-body"><div id="audioList"></div></div>
+      </div>
+    </section>
+
+    <!-- ── MANAGE VIDEO ───────────────────────────────────────── -->
+    <section class="sec" id="sec-manageVideo">
+      <div class="sec-hd">
+        <div class="sec-hd-left"><h2>Manage Video</h2><p>Edit, publish or delete video projects</p></div>
+        <button class="btn btn-gold btn-sm" onclick="goSec('addVideo',null)">+ Add New</button>
+      </div>
+      <div class="card">
+        <div class="card-body"><div id="videoList"></div></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+</div><!-- /adminPage -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg id="toastIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg"></span>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <h3 id="modalTitle">Edit</h3>
+      <button class="modal-close" onclick="closeModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   ADVANCED ADMIN PANEL — Full Site Editor
+   Christin Edward Portfolio
+   ══════════════════════════════════════════════════════════════ */
+
+const SK='ce_admin_ok';
+let newProfilePhoto=null, newAThumb=null, newVThumb=null, newAudioFile=null, curATab='drive';
+let toastTmr;
+
+// ── CREDENTIALS ───────────────────────────────────────────────
+function _ok(u,p){ return u==='Edward'&&p==='9751594023'; }
+
+// ── DEFAULT DATA ──────────────────────────────────────────────
+const DEFAULTS = {
+  profile:{ name:'Christin Edward', title:'Audio Engineer', tagline:'Sound designer. Dubbing engineer. Music producer.', avail:'Available for Projects' },
+  hero:{ l1:'SOUND', l2:'CRAFTED', l3:'WITH SOUL', loc:'Available for Projects — Nagercoil, Tamil Nadu', desc:'Professional audio engineer specialising in dubbing, music production, SFX, and cinematic sound design.', s1n:'50+', s1l:'Projects Done', s2n:'30+', s2l:'Dubbing Credits', s3n:'15+', s3l:'Short Films', s4n:'1', s4l:'VIT Award' },
+  about:{ p1:"I am a passionate Audio Engineer specializing in sound design, audio editing, mixing, and mastering for film, music, and digital media. My work focuses on delivering immersive audio experiences that enhance storytelling and emotional depth.", p2:"Based in Nagercoil, Tamil Nadu, I have worked on a wide range of projects including dubbing for regional cinema, independent music releases, short film audio post, and live sound.", p3:"Every project I work on begins with a deep understanding of the story being told.", quote:"serve the emotion, serve the narrative.", awtitle:'🏆 First Prize — VIT University Short Film Competition', awdesc:"Our team won the First Prize at VIT University. I handled the complete audio pipeline — sound design, SFX, dialogue mix, music sync, and final mastered deliverable." },
+  contact:{ email:'echristinedward@gmail.com', phone:'+91 97515 94023', loc:'Nagercoil, Tamil Nadu, India', avail:'Available for Projects', tools:'Pro Tools · Logic Pro · Ableton Live' },
+  skills:[{ name:'Pro Tools',pct:92 },{ name:'Logic Pro X',pct:88 },{ name:'Dubbing / ADR',pct:95 },{ name:'SFX & Sound Design',pct:90 },{ name:'Mixing & Mastering',pct:87 },{ name:'Music Production',pct:85 }],
+  timeline:[
+    { year:'2023 — Present', role:'Independent Audio Engineer', co:'Freelance · Nagercoil & Remote', desc:'Working independently on diverse projects including short films, music production, dubbing sessions, and SFX design.' },
+    { year:'2022', role:'First Prize — Short Film Competition', co:'VIT University, Vellore', desc:'Our team secured First Prize. Responsible for the complete audio workflow — recording, SFX, music sync, dialogue mixing.' },
+    { year:'2021 — 2023', role:'Dubbing & Music Projects', co:'Multiple Studios · South Tamil Nadu', desc:'Engineered and directed dubbing sessions for regional Tamil film projects. Music production for independent artists.' },
+    { year:'2018 — 2021', role:'Audio Production & Studio Work', co:'Independent Projects · Nagercoil', desc:'Short film sound recordist and post-production engineer. Foundation in Pro Tools and Logic Pro.' }
+  ]
+};
+
+function LS(k){ return JSON.parse(localStorage.getItem(k)||'null'); }
+function LSset(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+function g(k){ return LS(k)||JSON.parse(JSON.stringify(DEFAULTS[k]||null)); }
+
+// ── INIT ──────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  sessionStorage.getItem(SK)==='ok' ? showAdmin() : showLogin();
+  document.getElementById('loginPass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+  document.getElementById('loginUser').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('loginPass').focus(); });
+  document.getElementById('editModal').addEventListener('click',e=>{ if(e.target===document.getElementById('editModal')) closeModal(); });
+});
+
+function showLogin(){
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('adminPage').style.display='none';
+  setTimeout(()=>document.getElementById('loginUser').focus(),100);
+}
+function showAdmin(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('adminPage').style.display='block';
+  refreshStats(); loadAllForms(); renderAList(); renderVList();
+}
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  const err=document.getElementById('loginErr');
+  err.classList.remove('show');
+  if(!u||!p){ document.getElementById('loginErrMsg').textContent='Please enter both fields.'; err.classList.add('show'); return; }
+  if(_ok(u,p)){ sessionStorage.setItem(SK,'ok'); showAdmin(); }
+  else { document.getElementById('loginErrMsg').textContent='Invalid credentials.'; err.classList.add('show'); document.getElementById('loginPass').value=''; document.getElementById('loginPass').focus(); }
+}
+function doLogout(){
+  sessionStorage.removeItem(SK); showLogin();
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginErr').classList.remove('show');
+}
+
+// ── SIDEBAR NAV ───────────────────────────────────────────────
+function goSec(id,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='manageAudio') renderAList();
+  if(id==='manageVideo') renderVList();
+}
+
+// ── STATS ─────────────────────────────────────────────────────
+function refreshStats(){
+  const a=LS('ce_audio')||[], v=LS('ce_video')||[], sk=g('skills')||[];
+  const all=[...a,...v];
+  document.getElementById('st-audio').textContent=a.length;
+  document.getElementById('st-video').textContent=v.length;
+  document.getElementById('st-pub').textContent=all.filter(p=>p.status==='published').length;
+  document.getElementById('st-draft').textContent=all.filter(p=>p.status==='draft').length;
+  document.getElementById('st-skills').textContent=sk.length;
+}
+
+// ── LOAD ALL FORMS ────────────────────────────────────────────
+function loadAllForms(){ loadProfileForm(); loadHeroForm(); loadAboutForm(); loadSkillsForm(); loadTLForm(); loadContactForm(); }
+
+// ── PROFILE ───────────────────────────────────────────────────
+function loadProfileForm(){
+  const d=g('profile');
+  setVal('p-name',d.name); setVal('p-title',d.title);
+  setVal('p-tagline',d.tagline); setVal('p-avail',d.avail);
+  const photo=LS('ce_profile_photo');
+  if(photo){
+    const img=document.getElementById('p-photo-current');
+    img.onload=function(){ img.style.display='block'; };
+    img.src=photo;
+    if(img.complete && img.naturalWidth) img.style.display='block';
+  }
+}
+function handleProfilePhoto(input){
+  const f=input.files[0]; if(!f||f.size>5242880){ toast('Max 5MB for photo.','err'); return; }
+  const r=new FileReader();
+  r.onload=e=>{ newProfilePhoto=e.target.result; document.getElementById('p-photo-preview-img').src=newProfilePhoto; document.getElementById('p-photo-preview').classList.add('show'); };
+  r.readAsDataURL(f);
+}
+function removeProfilePhoto(){ newProfilePhoto=null; document.getElementById('p-photo-preview').classList.remove('show'); document.getElementById('p-photo-input').value=''; }
+function saveProfile(){
+  const d={ name:val('p-name'), title:val('p-title'), tagline:val('p-tagline'), avail:val('p-avail') };
+  if(!d.name||!d.title){ toast('Name and title are required.','err'); return; }
+  LSset('profile',d);
+  if(newProfilePhoto){
+    LSset('ce_profile_photo',newProfilePhoto);
+    const cur=document.getElementById('p-photo-current');
+    cur.src=newProfilePhoto; cur.style.display='block';
+    newProfilePhoto=null;
+    document.getElementById('p-photo-preview').classList.remove('show');
+  }
+  toast('Profile saved! ✓ Photo updated on About page.','ok');
+}
+
+// ── HERO ──────────────────────────────────────────────────────
+function loadHeroForm(){
+  const d=g('hero');
+  ['l1','l2','l3','loc','desc','s1n','s1l','s2n','s2l','s3n','s3l','s4n','s4l'].forEach(k=>setVal('h-'+k,d[k]||''));
+}
+function saveHero(){
+  const d={};
+  ['l1','l2','l3','loc','desc','s1n','s1l','s2n','s2l','s3n','s3l','s4n','s4l'].forEach(k=>d[k]=val('h-'+k));
+  LSset('hero',d); toast('Hero section saved!','ok');
+}
+
+// ── ABOUT ─────────────────────────────────────────────────────
+function loadAboutForm(){
+  const d=g('about');
+  setVal('ab-p1',d.p1); setVal('ab-p2',d.p2); setVal('ab-p3',d.p3); setVal('ab-quote',d.quote);
+  setVal('ab-aw-title',d.awtitle); setVal('ab-aw-desc',d.awdesc);
+}
+function saveAbout(){
+  const d={ p1:val('ab-p1'), p2:val('ab-p2'), p3:val('ab-p3'), quote:val('ab-quote'), awtitle:val('ab-aw-title'), awdesc:val('ab-aw-desc') };
+  if(!d.p1){ toast('Paragraph 1 is required.','err'); return; }
+  LSset('about',d); toast('About page saved!','ok');
+}
+
+// ── SKILLS ────────────────────────────────────────────────────
+function loadSkillsForm(){
+  const skills=g('skills')||[];
+  const c=document.getElementById('skillsContainer'); c.innerHTML='';
+  skills.forEach((s,i)=>c.appendChild(makeSkillRow(s.name,s.pct,i)));
+}
+function makeSkillRow(name,pct,i){
+  const div=document.createElement('div'); div.className='skill-row'; div.dataset.idx=i;
+  div.innerHTML=`
+    <input class="fi" placeholder="Skill name e.g. Pro Tools" value="${name||''}" onchange="updateSkill(${i},'name',this.value)"/>
+    <input class="fi pct" type="number" min="1" max="100" placeholder="%" value="${pct||80}" onchange="updateSkill(${i},'pct',+this.value)"/>
+    <span style="font-family:var(--ff-mono);font-size:.65rem;color:var(--t3);white-space:nowrap">${pct||80}%</span>
+    <button class="act del" onclick="removeSkill(${i})" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`;
+  return div;
+}
+function updateSkill(i,k,v){ const sk=g('skills')||[]; if(sk[i]) sk[i][k]=v; LSset('skills',sk); refreshStats(); }
+function removeSkill(i){ const sk=g('skills')||[]; sk.splice(i,1); LSset('skills',sk); loadSkillsForm(); refreshStats(); }
+function addSkillRow(){ const sk=g('skills')||[]; sk.push({name:'',pct:80}); LSset('skills',sk); loadSkillsForm(); }
+function saveSkills(){ const rows=document.querySelectorAll('#skillsContainer .skill-row'); const skills=[]; rows.forEach(r=>{ const inputs=r.querySelectorAll('input'); if(inputs[0].value.trim()) skills.push({name:inputs[0].value.trim(),pct:+inputs[1].value||80}); }); LSset('skills',skills); refreshStats(); toast('Skills saved!','ok'); }
+
+// ── TIMELINE ──────────────────────────────────────────────────
+function loadTLForm(){
+  const tl=g('timeline')||[];
+  const c=document.getElementById('tlContainer'); c.innerHTML='';
+  tl.forEach((t,i)=>c.appendChild(makeTLRow(t,i)));
+}
+function makeTLRow(t,i){
+  const div=document.createElement('div'); div.className='tl-editor-item';
+  div.innerHTML=`
+    <button class="tl-del" onclick="removeTL(${i})" title="Remove entry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="f2" style="margin-bottom:12px">
+      <div class="fg" style="margin-bottom:0"><label>Year / Period</label><input class="fi" value="${t.year||''}" placeholder="e.g. 2021 — 2023" onchange="updateTL(${i},'year',this.value)"/></div>
+      <div class="fg" style="margin-bottom:0"><label>Role / Title</label><input class="fi" value="${t.role||''}" placeholder="e.g. Dubbing Engineer" onchange="updateTL(${i},'role',this.value)"/></div>
+    </div>
+    <div class="fg" style="margin-bottom:10px"><label>Company / Studio</label><input class="fi" value="${t.co||''}" placeholder="e.g. Studio Name · Location" onchange="updateTL(${i},'co',this.value)"/></div>
+    <div class="fg" style="margin-bottom:0"><label>Description</label><textarea class="fta" style="min-height:70px" onchange="updateTL(${i},'desc',this.value)">${t.desc||''}</textarea></div>`;
+  return div;
+}
+function updateTL(i,k,v){ const tl=g('timeline')||[]; if(tl[i]) tl[i][k]=v; LSset('timeline',tl); }
+function removeTL(i){ const tl=g('timeline')||[]; tl.splice(i,1); LSset('timeline',tl); loadTLForm(); }
+function addTLRow(){ const tl=g('timeline')||[]; tl.unshift({year:'',role:'',co:'',desc:''}); LSset('timeline',tl); loadTLForm(); }
+function saveTimeline(){ const rows=document.querySelectorAll('#tlContainer .tl-editor-item'); const tl=[]; rows.forEach((r,i)=>{ const inputs=r.querySelectorAll('input'); const ta=r.querySelector('textarea'); tl.push({year:inputs[0].value.trim(),role:inputs[1].value.trim(),co:inputs[2].value.trim(),desc:ta.value.trim()}); }); LSset('timeline',tl); toast('Experience saved!','ok'); }
+
+// ── CONTACT ───────────────────────────────────────────────────
+function loadContactForm(){
+  const d=g('contact');
+  setVal('c-email',d.email); setVal('c-phone',d.phone);
+  setVal('c-loc',d.loc); setVal('c-avail',d.avail); setVal('c-tools',d.tools);
+}
+function saveContact(){
+  const d={ email:val('c-email'), phone:val('c-phone'), loc:val('c-loc'), avail:val('c-avail'), tools:val('c-tools') };
+  if(!d.email||!d.phone){ toast('Email and phone are required.','err'); return; }
+  LSset('contact',d); toast('Contact info saved!','ok');
+}
+
+// ── AUDIO THUMBNAIL ───────────────────────────────────────────
+function handleAThumb(input){
+  const f=input.files[0]; if(!f||f.size>5242880){ toast('Max 5MB.','err'); return; }
+  const r=new FileReader(); r.onload=e=>{ newAThumb=e.target.result; document.getElementById('aThumbImg').src=newAThumb; document.getElementById('aThumbPreview').classList.add('show'); document.getElementById('aThumbZone').style.display='none'; }; r.readAsDataURL(f);
+}
+function removeAThumb(){ newAThumb=null; document.getElementById('aThumbPreview').classList.remove('show'); document.getElementById('aThumbZone').style.display='block'; document.getElementById('a-thumb-input').value=''; }
+
+// ── VIDEO THUMBNAIL ───────────────────────────────────────────
+function handleVThumb(input){
+  const f=input.files[0]; if(!f||f.size>5242880){ toast('Max 5MB.','err'); return; }
+  const r=new FileReader(); r.onload=e=>{ newVThumb=e.target.result; document.getElementById('vThumbImg').src=newVThumb; document.getElementById('vThumbPreview').classList.add('show'); document.getElementById('vThumbZone').style.display='none'; }; r.readAsDataURL(f);
+}
+function removeVThumb(){ newVThumb=null; document.getElementById('vThumbPreview').classList.remove('show'); document.getElementById('vThumbZone').style.display='block'; document.getElementById('v-thumb-input').value=''; }
+
+// ── AUDIO SOURCE TABS ─────────────────────────────────────────
+function switchATab(tab,btn){ curATab=tab; document.querySelectorAll('.src-tab').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.src-panel').forEach(p=>p.classList.remove('active')); btn.classList.add('active'); document.getElementById('aTab-'+tab).classList.add('active'); }
+
+// ── AUDIO LINK PREVIEW ────────────────────────────────────────
+function onALink(url){
+  const ok=document.getElementById('a-link-ok'), prev=document.getElementById('a-prev'), el=document.getElementById('a-prev-el');
+  if(!url||url.length<10){ ok.classList.remove('show'); prev.classList.remove('show'); return; }
+  ok.classList.add('show');
+  const m=url.match(/\/file\/d\/([^\/\?]+)/);
+  if(m){ el.src=`https://drive.google.com/uc?export=download&id=${m[1]}`; prev.classList.add('show'); }
+}
+function onVLink(url){
+  const ok=document.getElementById('v-link-ok'), txt=document.getElementById('v-link-ok-txt');
+  if(!url||url.length<10){ ok.classList.remove('show'); return; }
+  txt.textContent=/youtube|youtu\.be/.test(url)?'✓ YouTube link detected':'✓ Google Drive link detected';
+  ok.classList.add('show');
+}
+
+// ── AUDIO FILE UPLOAD ─────────────────────────────────────────
+function handleAFile(input){
+  const f=input.files[0]; if(!f) return;
+  if(f.size>52428800){ toast('Max 50MB. Use Drive for larger files.','err'); return; }
+  document.getElementById('a-file-name').textContent='📎 '+f.name; document.getElementById('a-file-name').style.display='block';
+  const prog=document.getElementById('a-prog'),fill=document.getElementById('a-prog-fill'),txt=document.getElementById('a-prog-txt');
+  prog.classList.add('show'); let pct=0;
+  const iv=setInterval(()=>{ pct=Math.min(pct+5,90); fill.style.width=pct+'%'; txt.textContent='Reading... '+pct+'%'; },30);
+  const r=new FileReader();
+  r.onload=e=>{ clearInterval(iv); fill.style.width='100%'; txt.textContent='Ready ✓'; newAudioFile=e.target.result; setTimeout(()=>prog.classList.remove('show'),1500); };
+  r.onerror=()=>{ clearInterval(iv); toast('Error reading file.','err'); prog.classList.remove('show'); };
+  r.readAsDataURL(f);
+}
+
+// ── SAVE AUDIO ────────────────────────────────────────────────
+function saveAudio(){
+  const title=val('a-title'),cat=val('a-cat'),dur=val('a-dur'),fmt=val('a-fmt'),desc=val('a-desc'),stat=val('a-stat');
+  if(!title){ toast('Title required.','err'); return; }
+  if(!cat){ toast('Category required.','err'); return; }
+  if(!desc){ toast('Description required.','err'); return; }
+  let driveLink=null,fileData=null,fileType=null;
+  if(curATab==='drive'){
+    const lnk=val('a-drive-link');
+    if(!lnk){ toast('Please paste a Google Drive link.','err'); return; }
+    driveLink=lnk; fileType='drive';
+  } else {
+    if(!newAudioFile){ toast('Please upload an audio file.','err'); return; }
+    fileData=newAudioFile; fileType='upload';
+  }
+  const proj={ id:uid(), title, category:cat, duration:dur||'—', format:fmt, description:desc, status:stat, fileType, fileData, driveLink, thumbnail:newAThumb||null, createdAt:now() };
+  const data=LS('ce_audio')||[]; data.push(proj); LSset('ce_audio',data);
+  refreshStats(); resetAForm(); toast('Audio project saved!','ok');
+  goSec('manageAudio',null);
+}
+function resetAForm(){
+  ['a-title','a-dur','a-desc','a-drive-link'].forEach(id=>setVal(id,''));
+  document.getElementById('a-cat').selectedIndex=0; document.getElementById('a-fmt').selectedIndex=0; document.getElementById('a-stat').selectedIndex=0;
+  document.getElementById('a-file').value=''; document.getElementById('a-file-name').style.display='none';
+  document.getElementById('a-link-ok').classList.remove('show'); document.getElementById('a-prev').classList.remove('show');
+  removeAThumb(); newAudioFile=null;
+}
+
+// ── SAVE VIDEO ────────────────────────────────────────────────
+function saveVideo(){
+  const title=val('v-title'),type=val('v-type'),dur=val('v-dur'),year=val('v-year'),role=val('v-role'),desc=val('v-desc'),stat=val('v-stat'),link=val('v-drive-link');
+  if(!title){ toast('Title required.','err'); return; }
+  if(!type){ toast('Type required.','err'); return; }
+  if(!desc){ toast('Description required.','err'); return; }
+  if(!link){ toast('Please paste a Drive or YouTube link.','err'); return; }
+  const proj={ id:uid(), title, type, duration:dur||'—', year:year||new Date().getFullYear(), role:role||'Audio Engineer', description:desc, status:stat, driveLink:link, thumbnail:newVThumb||null, createdAt:now() };
+  const data=LS('ce_video')||[]; data.push(proj); LSset('ce_video',data);
+  refreshStats(); resetVForm(); toast('Video project saved!','ok');
+  goSec('manageVideo',null);
+}
+function resetVForm(){
+  ['v-title','v-dur','v-year','v-role','v-desc','v-drive-link'].forEach(id=>setVal(id,''));
+  document.getElementById('v-type').selectedIndex=0; document.getElementById('v-stat').selectedIndex=0;
+  document.getElementById('v-link-ok').classList.remove('show');
+  removeVThumb();
+}
+
+// ── RENDER LISTS ──────────────────────────────────────────────
+function renderAList(){
+  const data=LS('ce_audio')||[], el=document.getElementById('audioList');
+  if(!data.length){ el.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/></svg><p>No audio projects. <button onclick="goSec('addAudio',null)" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:inherit">Add one →</button></p></div>`; return; }
+  el.innerHTML=data.map(p=>`
+    <div class="prow">
+      ${p.thumbnail?`<div class="prow-thumb"><img src="${p.thumbnail}" alt=""/></div>`:`<div class="prow-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>`}
+      <div class="prow-info">
+        <div class="prow-name">${p.title}</div>
+        <div class="prow-meta">${p.category} · ${p.duration} · ${p.fileType==='drive'?'📁 Drive':'⬆ Upload'} · ${p.createdAt}</div>
+      </div>
+      <span class="bdg ${p.status==='published'?'bdg-pub':'bdg-draft'}">${p.status}</span>
+      <div class="prow-acts">
+        <button class="act" title="Edit" onclick="editAudio('${p.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="act" title="${p.status==='published'?'Unpublish':'Publish'}" onclick="toggleAudio('${p.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${p.status==='published'?'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>':'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'}</svg>
+        </button>
+        <button class="act del" title="Delete" onclick="delAudio('${p.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>`).join('');
+}
+
+function renderVList(){
+  const data=LS('ce_video')||[], el=document.getElementById('videoList');
+  if(!data.length){ el.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><p>No video projects. <button onclick="goSec('addVideo',null)" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:inherit">Add one →</button></p></div>`; return; }
+  el.innerHTML=data.map(p=>`
+    <div class="prow">
+      ${p.thumbnail?`<div class="prow-thumb"><img src="${p.thumbnail}" alt=""/></div>`:`<div class="prow-ico red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>`}
+      <div class="prow-info">
+        <div class="prow-name">${p.title}</div>
+        <div class="prow-meta">${p.type} · ${p.duration} · ${p.year} · ${/youtube|youtu\.be/.test(p.driveLink||'')?'▶ YouTube':'📁 Drive'} · ${p.createdAt}</div>
+      </div>
+      <span class="bdg ${p.status==='published'?'bdg-pub':'bdg-draft'}">${p.status}</span>
+      <div class="prow-acts">
+        <button class="act" title="Edit" onclick="editVideo('${p.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="act" title="${p.status==='published'?'Unpublish':'Publish'}" onclick="toggleVideo('${p.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${p.status==='published'?'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>':'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'}</svg>
+        </button>
+        <button class="act del" title="Delete" onclick="delVideo('${p.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>`).join('');
+}
+
+// ── TOGGLE PUBLISH ────────────────────────────────────────────
+function toggleAudio(id){ let d=LS('ce_audio')||[]; const i=d.findIndex(x=>x.id===id); if(i>-1){ d[i].status=d[i].status==='published'?'draft':'published'; LSset('ce_audio',d); refreshStats(); renderAList(); toast(d[i].status==='published'?'Published!':'Moved to draft.','ok'); } }
+function toggleVideo(id){ let d=LS('ce_video')||[]; const i=d.findIndex(x=>x.id===id); if(i>-1){ d[i].status=d[i].status==='published'?'draft':'published'; LSset('ce_video',d); refreshStats(); renderVList(); toast(d[i].status==='published'?'Published!':'Moved to draft.','ok'); } }
+
+// ── DELETE ────────────────────────────────────────────────────
+function delAudio(id){ if(!confirm('Delete this audio project? Cannot undo.')) return; let d=LS('ce_audio')||[]; LSset('ce_audio',d.filter(p=>p.id!==id)); refreshStats(); renderAList(); toast('Deleted.','ok'); }
+function delVideo(id){ if(!confirm('Delete this video project? Cannot undo.')) return; let d=LS('ce_video')||[]; LSset('ce_video',d.filter(p=>p.id!==id)); refreshStats(); renderVList(); toast('Deleted.','ok'); }
+
+// ── EDIT AUDIO MODAL ──────────────────────────────────────────
+function editAudio(id){
+  const data=LS('ce_audio')||[], p=data.find(x=>x.id===id); if(!p) return;
+  document.getElementById('modalTitle').textContent='Edit Audio Project';
+  document.getElementById('modalBody').innerHTML=`
+    <div class="fg"><label>Title *</label><input class="fi" id="ea-t" value="${esc(p.title)}"/></div>
+    <div class="f2">
+      <div class="fg"><label>Category</label><select class="fse" id="ea-c">${['Dubbing','Music Production','SFX Design','Mixing','Mastering','Sound Design','Foley','Background Score','Other'].map(c=>`<option ${p.category===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="fg"><label>Duration</label><input class="fi" id="ea-d" value="${esc(p.duration)}"/></div>
+    </div>
+    <div class="fg"><label>Description *</label><textarea class="fta" id="ea-desc">${esc(p.description)}</textarea></div>
+    ${p.fileType==='drive'?`<div class="fg"><label>Google Drive Link</label><input class="fi" id="ea-l" value="${esc(p.driveLink||'')}"/></div>`:'<p style="font-size:.84rem;color:var(--t2);margin-bottom:14px">Source: uploaded file (re-add to change file)</p>'}
+    <div class="fg"><label>Thumbnail Image</label>
+      ${p.thumbnail?`<div style="margin-bottom:10px"><img src="${p.thumbnail}" style="width:100%;max-height:140px;object-fit:cover;border-radius:var(--r2);border:1px solid var(--gold-line)"/></div>`:''}
+      <div class="img-upload-zone" onclick="document.getElementById('ea-thumb').click()">
+        <input type="file" id="ea-thumb" accept=".jpg,.jpeg,.png,.webp" style="display:none"/>
+        <svg class="up-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p class="up-txt">${p.thumbnail?'Replace thumbnail':'Upload thumbnail'}</p>
+        <p class="up-hint">JPG, PNG, WebP · Max 5MB</p>
+      </div>
+      <div class="img-preview-wrap" id="ea-thumb-preview"><img id="ea-thumb-img" src=""/><button class="img-preview-remove" onclick="document.getElementById('ea-thumb-preview').classList.remove('show');document.getElementById('ea-thumb').value=''">✕</button></div>
+    </div>
+    <div class="fg"><label>Status</label><select class="fse" id="ea-s"><option value="published" ${p.status==='published'?'selected':''}>Published</option><option value="draft" ${p.status==='draft'?'selected':''}>Draft</option></select></div>
+    <div class="save-bar">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="updateAudio('${id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save</button>
+    </div>`;
+  // Hook thumbnail preview in modal
+  document.getElementById('ea-thumb').addEventListener('change',function(){
+    const f=this.files[0]; if(!f||f.size>5242880){ toast('Max 5MB.','err'); return; }
+    const r=new FileReader(); r.onload=e=>{ document.getElementById('ea-thumb-img').src=e.target.result; document.getElementById('ea-thumb-preview').classList.add('show'); }; r.readAsDataURL(f);
+  });
+  openModal();
+}
+function updateAudio(id){
+  const t=val('ea-t'),c=document.getElementById('ea-c').value,d=val('ea-d'),desc=val('ea-desc'),s=val('ea-s');
+  if(!t||!desc){ toast('Title and description required.','err'); return; }
+  let data=LS('ce_audio')||[]; const i=data.findIndex(x=>x.id===id); if(i===-1) return;
+  const upd={...data[i],title:t,category:c,duration:d||'—',description:desc,status:s};
+  const lEl=document.getElementById('ea-l'); if(lEl) upd.driveLink=lEl.value.trim();
+  // Check new thumbnail
+  const tInput=document.getElementById('ea-thumb');
+  if(tInput&&tInput.files[0]){
+    const r=new FileReader(); r.onload=e=>{ upd.thumbnail=e.target.result; data[i]=upd; LSset('ce_audio',data); closeModal(); refreshStats(); renderAList(); toast('Audio updated!','ok'); }; r.readAsDataURL(tInput.files[0]); return;
+  }
+  data[i]=upd; LSset('ce_audio',data); closeModal(); refreshStats(); renderAList(); toast('Audio updated!','ok');
+}
+
+// ── EDIT VIDEO MODAL ──────────────────────────────────────────
+function editVideo(id){
+  const data=LS('ce_video')||[], p=data.find(x=>x.id===id); if(!p) return;
+  document.getElementById('modalTitle').textContent='Edit Video Project';
+  document.getElementById('modalBody').innerHTML=`
+    <div class="fg"><label>Title *</label><input class="fi" id="ev-t" value="${esc(p.title)}"/></div>
+    <div class="f2">
+      <div class="fg"><label>Type</label><select class="fse" id="ev-ty">${['Short Film','Feature Film','Documentary','Music Video','Commercial','Web Series','Other'].map(t=>`<option ${p.type===t?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="fg"><label>Year</label><input class="fi" id="ev-y" value="${p.year}"/></div>
+    </div>
+    <div class="f2">
+      <div class="fg"><label>Duration</label><input class="fi" id="ev-d" value="${esc(p.duration)}"/></div>
+      <div class="fg"><label>Your Role</label><input class="fi" id="ev-r" value="${esc(p.role||'')}"/></div>
+    </div>
+    <div class="fg"><label>Description *</label><textarea class="fta" id="ev-desc">${esc(p.description)}</textarea></div>
+    <div class="fg"><label>Drive / YouTube Link</label><input class="fi" id="ev-l" value="${esc(p.driveLink||'')}"/></div>
+    <div class="fg"><label>Thumbnail Image</label>
+      ${p.thumbnail?`<div style="margin-bottom:10px"><img src="${p.thumbnail}" style="width:100%;max-height:160px;object-fit:cover;border-radius:var(--r2);border:1px solid var(--gold-line)"/></div>`:''}
+      <div class="img-upload-zone" onclick="document.getElementById('ev-thumb').click()">
+        <input type="file" id="ev-thumb" accept=".jpg,.jpeg,.png,.webp" style="display:none"/>
+        <svg class="up-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p class="up-txt">${p.thumbnail?'Replace thumbnail':'Upload thumbnail'}</p>
+        <p class="up-hint">JPG, PNG, WebP · Max 5MB · 16:9 recommended</p>
+      </div>
+      <div class="img-preview-wrap" id="ev-thumb-preview"><img id="ev-thumb-img" src=""/><button class="img-preview-remove" onclick="document.getElementById('ev-thumb-preview').classList.remove('show');document.getElementById('ev-thumb').value=''">✕</button></div>
+    </div>
+    <div class="fg"><label>Status</label><select class="fse" id="ev-s"><option value="published" ${p.status==='published'?'selected':''}>Published</option><option value="draft" ${p.status==='draft'?'selected':''}>Draft</option></select></div>
+    <div class="save-bar">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="updateVideo('${id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save</button>
+    </div>`;
+  document.getElementById('ev-thumb').addEventListener('change',function(){
+    const f=this.files[0]; if(!f||f.size>5242880){ toast('Max 5MB.','err'); return; }
+    const r=new FileReader(); r.onload=e=>{ document.getElementById('ev-thumb-img').src=e.target.result; document.getElementById('ev-thumb-preview').classList.add('show'); }; r.readAsDataURL(f);
+  });
+  openModal();
+}
+function updateVideo(id){
+  const t=val('ev-t'),ty=document.getElementById('ev-ty').value,y=val('ev-y'),d=val('ev-d'),r=val('ev-r'),desc=val('ev-desc'),l=val('ev-l'),s=val('ev-s');
+  if(!t||!desc){ toast('Title and description required.','err'); return; }
+  let data=LS('ce_video')||[]; const i=data.findIndex(x=>x.id===id); if(i===-1) return;
+  const upd={...data[i],title:t,type:ty,year:y||new Date().getFullYear(),duration:d||'—',role:r,description:desc,driveLink:l,status:s};
+  const tInput=document.getElementById('ev-thumb');
+  if(tInput&&tInput.files[0]){
+    const reader=new FileReader(); reader.onload=e=>{ upd.thumbnail=e.target.result; data[i]=upd; LSset('ce_video',data); closeModal(); refreshStats(); renderVList(); toast('Video updated!','ok'); }; reader.readAsDataURL(tInput.files[0]); return;
+  }
+  data[i]=upd; LSset('ce_video',data); closeModal(); refreshStats(); renderVList(); toast('Video updated!','ok');
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+function openModal(){ document.getElementById('editModal').classList.add('open'); }
+function closeModal(){ document.getElementById('editModal').classList.remove('open'); }
+
+// ── TOAST ─────────────────────────────────────────────────────
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast'), ico=document.getElementById('toastIco');
+  document.getElementById('toastMsg').textContent=msg;
+  t.className='toast';
+  if(type==='ok'){ t.classList.add('ok'); ico.innerHTML='<polyline points="20 6 9 17 4 12"/>'; ico.setAttribute('stroke','var(--green)'); }
+  else { t.classList.add('err'); ico.innerHTML='<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'; ico.setAttribute('stroke','var(--red)'); }
+  t.classList.add('show'); clearTimeout(toastTmr); toastTmr=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function val(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+function setVal(id,v){ const el=document.getElementById(id); if(el) el.value=v||''; }
+function uid(){ return Date.now()+'_'+Math.random().toString(36).substr(2,8); }
+function now(){ return new Date().toLocaleDateString('en-IN'); }
+function esc(s){ return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>
