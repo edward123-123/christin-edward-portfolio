@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Christin Edward — Professional Audio Engineer specialising in dubbing, music production, SFX design, and mixing from Nagercoil, Tamil Nadu."/>
+<meta name="keywords" content="audio engineer, dubbing, sound design, mixing, mastering, SFX, Tamil Nadu, Nagercoil"/>
+<title id="pg-title">Christin Edward — Audio Engineer</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+/* Page-specific extras */
+.hero-badge-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:44px; }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+  border-radius:100px; padding:6px 16px;
+  font-family:var(--f-mono); font-size:.62rem; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--tx-2);
+}
+.hero-badge svg { width:12px; height:12px; color:var(--gold-2); }
+/* Scrolling ticker */
+.ticker-wrap {
+  overflow:hidden; background:var(--gold); padding:10px 0;
+  border-top:1px solid rgba(0,0,0,.1); border-bottom:1px solid rgba(0,0,0,.1);
+}
+.ticker-inner {
+  display:flex; gap:0; white-space:nowrap;
+  animation:ticker 28s linear infinite;
+}
+.ticker-inner:hover { animation-play-state:paused; }
+@keyframes ticker {
+  from { transform:translateX(0); }
+  to   { transform:translateX(-50%); }
+}
+.ticker-item {
+  display:inline-flex; align-items:center; gap:16px;
+  font-family:var(--f-mono); font-size:.72rem; font-weight:700;
+  letter-spacing:.16em; text-transform:uppercase; color:#0a0a0a;
+  padding:0 32px;
+}
+.ticker-dot { width:5px; height:5px; border-radius:50%; background:#0a0a0a; opacity:.4; }
+/* Process section */
+.process-section { padding:100px 0; background:var(--bg-void); }
+.process-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--b1); border:1px solid var(--b1); border-radius:var(--r-lg); overflow:hidden; margin-top:60px; }
+.process-step { background:var(--bg-card); padding:36px 28px; transition:background var(--dur-med); position:relative; overflow:hidden; }
+.process-step::after { content:''; position:absolute; top:0; right:0; width:40%; height:100%; background:linear-gradient(to left,rgba(201,148,31,.03),transparent); pointer-events:none; }
+.process-step:hover { background:var(--bg-raised); }
+.process-num { font-family:var(--f-serif); font-size:4rem; font-weight:700; color:rgba(201,148,31,.08); line-height:1; margin-bottom:16px; }
+.process-name { font-family:var(--f-sans); font-size:1.05rem; font-weight:700; color:var(--tx-1); margin-bottom:10px; }
+.process-desc { font-size:.88rem; color:var(--tx-2); line-height:1.75; }
+/* Testimonial / quote block */
+.quote-section { padding:80px 0; background:var(--bg-deep); border-top:1px solid var(--b1); border-bottom:1px solid var(--b1); text-align:center; }
+.quote-mark { font-family:var(--f-serif); font-size:6rem; color:var(--gold-a30); line-height:0.5; margin-bottom:20px; }
+.quote-text { font-family:var(--f-serif); font-size:clamp(1.4rem,2.5vw,2rem); font-weight:400; font-style:italic; color:var(--tx-1); max-width:700px; margin:0 auto 24px; line-height:1.55; }
+.quote-author { font-family:var(--f-mono); font-size:.65rem; letter-spacing:.22em; text-transform:uppercase; color:var(--tx-3); }
+@media(max-width:768px){
+  .process-grid{grid-template-columns:repeat(2,1fr)}
+  .services-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  .process-grid{grid-template-columns:1fr}
+  .services-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><rect x="2" y="9" width="2" height="6"/><rect x="6" y="5" width="2" height="14"/><rect x="10" y="2" width="2" height="20"/><rect x="14" y="5" width="2" height="14"/><rect x="18" y="9" width="2" height="6"/></svg></div>
+      <div class="logo-text"><div class="logo-name" id="lname">Christin Edward</div><div class="logo-role" id="lrole">Audio Engineer</div></div>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="about.html">About</a>
+      <a href="portfolio.html">Portfolio</a>
+      <a href="admin.html" class="nav-cta">Admin</a>
+    </nav>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <!-- Right-side waveform decoration -->
+  <div class="hero-corner" aria-hidden="true">
+    <svg viewBox="0 0 500 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMid meet">
+      <g fill="#c9941f" opacity="0.22">
+        <rect x="20"  y="200" width="10" height="60"/><rect x="40"  y="170" width="10" height="120"/>
+        <rect x="60"  y="130" width="10" height="200"/><rect x="80"  y="100" width="10" height="260"/>
+        <rect x="100" y="70"  width="10" height="320"/><rect x="120" y="110" width="10" height="240"/>
+        <rect x="140" y="150" width="10" height="160"/><rect x="160" y="80"  width="10" height="300"/>
+        <rect x="180" y="50"  width="10" height="360"/><rect x="200" y="100" width="10" height="260"/>
+        <rect x="220" y="140" width="10" height="180"/><rect x="240" y="60"  width="10" height="340"/>
+        <rect x="260" y="40"  width="10" height="380"/><rect x="280" y="90"  width="10" height="280"/>
+        <rect x="300" y="120" width="10" height="220"/><rect x="320" y="160" width="10" height="140"/>
+        <rect x="340" y="90"  width="10" height="280"/><rect x="360" y="60"  width="10" height="340"/>
+        <rect x="380" y="120" width="10" height="220"/><rect x="400" y="180" width="10" height="100"/>
+        <rect x="420" y="150" width="10" height="160"/><rect x="440" y="120" width="10" height="220"/>
+        <rect x="460" y="80"  width="10" height="300"/><rect x="480" y="50"  width="10" height="360"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <!-- Availability badge -->
+    <div class="hero-availability">
+      <span class="avail-dot"></span>
+      <span id="h-loc">Available for Projects — Nagercoil, Tamil Nadu</span>
+    </div>
+
+    <!-- Headline -->
+    <h1 class="hero-title">
+      <span id="h-l1">SOUND</span><br>
+      <em id="h-l2">CRAFTED</em><br>
+      <span class="outline" id="h-l3">WITH SOUL</span>
+    </h1>
+
+    <!-- Badges row -->
+    <div class="hero-badge-row">
+      <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Available Now</span>
+      <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>Nagercoil, TN</span>
+      <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>VIT Award Winner</span>
+    </div>
+
+    <p class="hero-desc" id="h-desc">Professional audio engineer specialising in dubbing, music production, SFX design, and cinematic sound. Delivering immersive audio experiences that move audiences and elevate stories.</p>
+
+    <div class="hero-actions">
+      <a href="portfolio.html" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        View Portfolio
+      </a>
+      <a href="about.html" class="btn btn-outline">About Me</a>
+      <a id="h-email-btn" href="mailto:echristinedward@gmail.com" class="btn btn-outline">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Contact
+      </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="hero-stats">
+      <div><div class="stat-num" id="h-s1n">50+</div><div class="stat-lbl" id="h-s1l">Projects Done</div></div>
+      <div><div class="stat-num" id="h-s2n">30+</div><div class="stat-lbl" id="h-s2l">Dubbing Credits</div></div>
+      <div><div class="stat-num" id="h-s3n">15+</div><div class="stat-lbl" id="h-s3l">Short Films</div></div>
+      <div><div class="stat-num" id="h-s4n">1st</div><div class="stat-lbl" id="h-s4l">VIT University Prize</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-inner">
+    <!-- Two copies for seamless loop -->
+    <script>
+    (function(){
+      const items=["Dubbing","Music Production","SFX Design","Mixing & Mastering","Sound Design","Foley","Short Films","Post Production","Audio Engineering"];
+      const c=document.currentScript;
+      let h='';
+      [items,items].forEach(arr=>arr.forEach(t=>{ h+=`<span class="ticker-item">${t}<span class="ticker-dot"></span></span>`; }));
+      c.parentNode.innerHTML+=h;
+    })();
+    </script>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="services-section">
+  <div class="container">
+    <p class="eyebrow">What I Do</p>
+    <h2 class="section-title">Core <em>Services</em></h2>
+    <p class="section-subtitle">From the recording booth to the final master — professional audio across every format and genre.</p>
+    <div class="services-grid">
+      <article class="service-card">
+        <div class="service-num">01</div>
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        <h3 class="service-name">Dubbing</h3>
+        <p class="service-desc">Professional dialogue replacement, lip-sync dubbing, ADR, and voice direction for films, web series, and regional language projects.</p>
+      </article>
+      <article class="service-card">
+        <div class="service-num">02</div>
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <h3 class="service-name">Music Production</h3>
+        <p class="service-desc">Full-stack music production — composition, arrangement, mixing and mastering for commercial and independent releases across Tamil Nadu.</p>
+      </article>
+      <article class="service-card">
+        <div class="service-num">03</div>
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        <h3 class="service-name">SFX Design</h3>
+        <p class="service-desc">Original sound effects, Foley recording, and atmospheric design that enhances storytelling and emotional impact in every frame.</p>
+      </article>
+      <article class="service-card">
+        <div class="service-num">04</div>
+        <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="8" y1="6" x2="8" y2="18"/><circle cx="8" cy="9" r="2"/><line x1="16" y1="6" x2="16" y2="18"/><circle cx="16" cy="14" r="2"/></svg>
+        <h3 class="service-name">Mixing &amp; Mastering</h3>
+        <p class="service-desc">Precision stereo and surround mixing with professional mastering for streaming, broadcast, cinema, and physical media release.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process-section">
+  <div class="container">
+    <p class="eyebrow">How I Work</p>
+    <h2 class="section-title">The <em>Process</em></h2>
+    <p class="section-subtitle">A clear, collaborative workflow from first brief to final delivery — every time.</p>
+    <div class="process-grid">
+      <div class="process-step"><div class="process-num">01</div><div class="process-name">Brief &amp; Vision</div><p class="process-desc">Understanding your story, your audience, and your sonic goals before a single fader moves.</p></div>
+      <div class="process-step"><div class="process-num">02</div><div class="process-name">Pre-Production</div><p class="process-desc">Planning the session — selecting the right tools, microphones, signal chain, and recording environment.</p></div>
+      <div class="process-step"><div class="process-num">03</div><div class="process-name">Production</div><p class="process-desc">Recording, dubbing, sound design, and editing with precision and creative attention to every detail.</p></div>
+      <div class="process-step"><div class="process-num">04</div><div class="process-name">Delivery</div><p class="process-desc">Final mix and master delivered to your spec — broadcast, streaming, cinema, or physical media ready.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<section class="featured-section">
+  <div class="container">
+    <p class="eyebrow">Selected Works</p>
+    <h2 class="section-title">Featured <em>Projects</em></h2>
+    <p class="section-subtitle">A selection of standout work across dubbing, music, and short film sound design.</p>
+    <div class="featured-grid">
+      <article class="featured-item">
+        <div class="featured-type">Short Film · SFX &amp; Mix</div>
+        <h3 class="featured-title">VIT University Award Winner</h3>
+        <p class="featured-desc">Our team won First Prize at the VIT University Short Film Competition — complete sound design, SFX, dialogue mix and final master delivered under competition conditions.</p>
+        <svg class="featured-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </article>
+      <article class="featured-item">
+        <div class="featured-type">Dubbing · Regional Cinema</div>
+        <h3 class="featured-title">Multi-Language Dubbing</h3>
+        <p class="featured-desc">Directed and engineered dubbing sessions for multiple regional Tamil language film projects — ADR, dialogue sync, voice direction, and studio recording.</p>
+        <svg class="featured-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </article>
+      <article class="featured-item">
+        <div class="featured-type">Music · Production</div>
+        <h3 class="featured-title">Original Compositions</h3>
+        <p class="featured-desc">Original music composed, arranged, mixed and mastered for independent Tamil films, music videos, and commercial projects across South Tamil Nadu.</p>
+        <svg class="featured-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </article>
+    </div>
+    <div style="margin-top:36px;text-align:center"><a href="portfolio.html" class="btn btn-outline">View Full Portfolio</a></div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <div class="container">
+    <div class="quote-mark">"</div>
+    <blockquote class="quote-text">"Every project begins with a deep understanding of the story being told — because great audio is invisible. The audience should feel transported, not aware of the craft."</blockquote>
+    <p class="quote-author">— Christin Edward, Audio Engineer</p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band">
+  <div class="container">
+    <p class="eyebrow" style="justify-content:center;">Let's Collaborate</p>
+    <h2 class="cta-band-title">Ready to shape<br><em>your sound?</em></h2>
+    <p>Whether it's dubbing, music, SFX, or a full audio post project — let's make something remarkable together.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <a id="cta-mail" href="mailto:echristinedward@gmail.com" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Get In Touch
+      </a>
+      <a href="portfolio.html" class="btn btn-outline">See My Work</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><svg viewBox="0 0 24 24"><rect x="2" y="9" width="2" height="6"/><rect x="6" y="5" width="2" height="14"/><rect x="10" y="2" width="2" height="20"/><rect x="14" y="5" width="2" height="14"/><rect x="18" y="9" width="2" height="6"/></svg></div>
+          <div class="logo-text"><div class="logo-name" id="f-name">Christin Edward</div><div class="logo-role">Audio Engineer</div></div>
+        </a>
+        <p id="f-tagline">Crafting immersive audio experiences for film, music, and digital media from Nagercoil, Tamil Nadu.</p>
+      </div>
+      <div><p class="footer-col-title">Navigation</p><ul class="footer-links"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="portfolio.html">Portfolio</a></li><li><a href="admin.html">Admin</a></li></ul></div>
+      <div><p class="footer-col-title">Services</p><ul class="footer-links"><li><a href="portfolio.html">Dubbing</a></li><li><a href="portfolio.html">Music Production</a></li><li><a href="portfolio.html">SFX Design</a></li><li><a href="portfolio.html">Mixing &amp; Mastering</a></li></ul></div>
+      <div><p class="footer-col-title">Contact</p><ul class="footer-links"><li><a id="f-email" href="mailto:echristinedward@gmail.com">echristinedward@gmail.com</a></li><li><a id="f-phone" href="tel:+919751594023">+91 97515 94023</a></li><li id="f-loc">Nagercoil, Tamil Nadu</li></ul></div>
+    </div>
+    <div class="footer-bottom"><span id="f-copy">&copy; 2025 Christin Edward. All rights reserved.</span><span>Dubbing · Music · SFX · Mixing</span></div>
+  </div>
+</footer>
+
+<script>
+/* Load site data from localStorage and update DOM */
+function g(k,d){ try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;} }
+const PR=g('profile',{name:'Christin Edward',title:'Audio Engineer',tagline:'',avail:''});
+const HE=g('hero',{l1:'SOUND',l2:'CRAFTED',l3:'WITH SOUL',loc:'Available for Projects — Nagercoil, Tamil Nadu',desc:'Professional audio engineer specialising in dubbing, music production, SFX design, and cinematic sound.',s1n:'50+',s1l:'Projects Done',s2n:'30+',s2l:'Dubbing Credits',s3n:'15+',s3l:'Short Films',s4n:'1st',s4l:'VIT University Prize'});
+const CO=g('contact',{email:'echristinedward@gmail.com',phone:'+91 97515 94023',loc:'Nagercoil, Tamil Nadu'});
+const set=(id,v)=>{const e=document.getElementById(id);if(e&&v)e.textContent=v;};
+const seta=(id,attr,v)=>{const e=document.getElementById(id);if(e&&v)e.setAttribute(attr,v);};
+// Nav
+set('lname',PR.name); set('lrole',PR.title);
+// Hero
+set('h-l1',HE.l1); set('h-l2',HE.l2); set('h-l3',HE.l3);
+set('h-loc',HE.loc); set('h-desc',HE.desc);
+set('h-s1n',HE.s1n); set('h-s1l',HE.s1l);
+set('h-s2n',HE.s2n); set('h-s2l',HE.s2l);
+set('h-s3n',HE.s3n); set('h-s3l',HE.s3l);
+set('h-s4n',HE.s4n); set('h-s4l',HE.s4l);
+seta('h-email-btn','href','mailto:'+CO.email);
+// Footer
+set('f-name',PR.name);
+if(PR.tagline) set('f-tagline',PR.tagline+' Based in '+CO.loc+'.');
+set('f-email',CO.email); seta('f-email','href','mailto:'+CO.email);
+set('f-phone',CO.phone); seta('f-phone','href','tel:'+CO.phone.replace(/\s/g,''));
+set('f-loc',CO.loc);
+set('f-copy','© '+new Date().getFullYear()+' '+PR.name+'. All rights reserved.');
+document.getElementById('pg-title').textContent=PR.name+' — '+PR.title;
+seta('cta-mail','href','mailto:'+CO.email);
+// Scroll-based nav style
+window.addEventListener('scroll',()=>{
+  document.getElementById('mainNav').classList.toggle('nav-scrolled',window.scrollY>40);
+},{ passive:true });
+</script>
+</body>
+</html>

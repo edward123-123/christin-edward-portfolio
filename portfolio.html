@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Portfolio of Christin Edward — Video projects across film, music, and sound design."/>
+<title id="pg-title">Portfolio — Christin Edward</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+/* Portfolio-specific */
+.port-filter-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:40px; }
+.filter-btn {
+  font-family:var(--f-mono); font-size:.62rem; letter-spacing:.14em; text-transform:uppercase;
+  padding:8px 18px; border-radius:100px;
+  border:1px solid var(--b1); background:transparent; color:var(--tx-3);
+  cursor:pointer; transition:all var(--dur-fast);
+}
+.filter-btn:hover { border-color:var(--b2); color:var(--tx-2); }
+.filter-btn.active { border-color:var(--gold-2); background:var(--gold-a15); color:var(--gold-2); }
+.port-count { font-family:var(--f-mono); font-size:.65rem; letter-spacing:.14em; color:var(--tx-3); margin-left:auto; align-self:center; }
+/* Video card enhancements */
+.v-card { position:relative; }
+.v-card-new {
+  position:absolute; top:14px; left:14px; z-index:2;
+  background:var(--gold-2); color:#0a0a0a;
+  font-family:var(--f-mono); font-size:.55rem; font-weight:700;
+  letter-spacing:.12em; text-transform:uppercase;
+  padding:3px 9px; border-radius:var(--r-xs);
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><rect x="2" y="9" width="2" height="6"/><rect x="6" y="5" width="2" height="14"/><rect x="10" y="2" width="2" height="20"/><rect x="14" y="5" width="2" height="14"/><rect x="18" y="9" width="2" height="6"/></svg></div>
+      <div class="logo-text"><div class="logo-name" id="lname">Christin Edward</div><div class="logo-role" id="lrole">Audio Engineer</div></div>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="portfolio.html" class="active">Portfolio</a>
+      <a href="admin.html" class="nav-cta">Admin</a>
+    </nav>
+  </div>
+</nav>
+
+<header class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="container page-hero-inner">
+    <p class="eyebrow">Work Samples</p>
+    <h1>Portfolio</h1>
+    <p>Live video projects — click any thumbnail to play. Powered by Google Drive and YouTube.</p>
+  </div>
+</header>
+
+<main class="portfolio-section">
+  <div class="container">
+
+    <!-- Video section -->
+    <div class="port-heading-row" style="padding-top:0">
+      <p class="eyebrow" style="margin-bottom:0;white-space:nowrap">Video Projects</p>
+      <h2>Film &amp; Video</h2>
+      <div class="port-rule"></div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="port-filter-row" id="filterRow">
+      <button class="filter-btn active" data-filter="all" onclick="filterVideos('all',this)">All</button>
+      <span class="port-count" id="portCount">0 projects</span>
+    </div>
+
+    <div class="video-grid" id="videoGrid"></div>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><svg viewBox="0 0 24 24"><rect x="2" y="9" width="2" height="6"/><rect x="6" y="5" width="2" height="14"/><rect x="10" y="2" width="2" height="20"/><rect x="14" y="5" width="2" height="14"/><rect x="18" y="9" width="2" height="6"/></svg></div>
+          <div class="logo-text"><div class="logo-name" id="f-name">Christin Edward</div><div class="logo-role">Audio Engineer</div></div>
+        </a>
+        <p>Crafting immersive audio experiences from Nagercoil, Tamil Nadu.</p>
+      </div>
+      <div><p class="footer-col-title">Navigation</p><ul class="footer-links"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="portfolio.html">Portfolio</a></li></ul></div>
+      <div><p class="footer-col-title">Services</p><ul class="footer-links"><li><a href="#">Dubbing</a></li><li><a href="#">Music Production</a></li><li><a href="#">SFX Design</a></li><li><a href="#">Mixing</a></li></ul></div>
+      <div><p class="footer-col-title">Contact</p><ul class="footer-links"><li><a id="fe" href="#">echristinedward@gmail.com</a></li><li><a id="fp" href="#">+91 97515 94023</a></li><li id="fl">Nagercoil, TN</li></ul></div>
+    </div>
+    <div class="footer-bottom"><span id="f-copy">&copy; 2025 Christin Edward. All rights reserved.</span><span>Dubbing · Music · SFX · Mixing</span></div>
+  </div>
+</footer>
+
+<script>
+function g(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;}}
+const set=(id,v)=>{const e=document.getElementById(id);if(e&&v)e.textContent=v;};
+const seta=(id,a,v)=>{const e=document.getElementById(id);if(e&&v)e.setAttribute(a,v);};
+const PR=g('profile',{name:'Christin Edward',title:'Audio Engineer'});
+const CO=g('contact',{email:'echristinedward@gmail.com',phone:'+91 97515 94023',loc:'Nagercoil, TN'});
+set('lname',PR.name); set('lrole',PR.title);
+document.getElementById('pg-title').textContent='Portfolio — '+PR.name;
+set('f-name',PR.name);
+set('fe',CO.email); seta('fe','href','mailto:'+CO.email);
+set('fp',CO.phone); seta('fp','href','tel:'+CO.phone.replace(/\s/g,''));
+set('fl',CO.loc); set('f-copy','© '+new Date().getFullYear()+' '+PR.name+'.');
+
+function driveEmbed(url){
+  if(!url) return '';
+  const yt=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if(yt) return `https://www.youtube.com/embed/${yt[1]}?autoplay=1&rel=0`;
+  const m=url.match(/\/file\/d\/([^\/\?]+)/);
+  if(m) return `https://drive.google.com/file/d/${m[1]}/preview`;
+  return url;
+}
+function isYT(url){ return /youtube\.com|youtu\.be/.test(url||''); }
+
+let allVideos=[], activeFilter='all';
+
+function filterVideos(type, btn){
+  activeFilter=type;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderVideos();
+}
+
+function renderVideos(){
+  const grid=document.getElementById('videoGrid');
+  const pub=allVideos.filter(p=>p.status==='published' && (activeFilter==='all'||p.type===activeFilter));
+  document.getElementById('portCount').textContent=pub.length+' project'+(pub.length!==1?'s':'');
+
+  if(!pub.length){
+    grid.innerHTML=`<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      <p>No video projects yet. <a href="admin.html">Add from Admin Panel →</a></p>
+    </div>`;
+    return;
+  }
+  grid.innerHTML=pub.map(p=>{
+    const sid=p.id.replace(/[^a-z0-9]/gi,'_');
+    const embed=driveEmbed(p.driveLink||'');
+    const src=isYT(p.driveLink||'')?'YouTube':'Google Drive';
+    const thumbBlock=p.thumbnail
+      ? `<div class="v-thumb" id="th-${sid}" onclick="playV('${sid}')">
+           <img src="${p.thumbnail}" alt="${p.title}"/>
+           <div class="v-play-overlay"><div class="v-play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+         </div>`
+      : `<div class="v-thumb-fallback" id="th-${sid}" onclick="playV('${sid}')">
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+           <span>Click to Play</span>
+         </div>`;
+    return `<article class="v-card">
+      ${thumbBlock}
+      <div class="v-player" id="if-${sid}">
+        <iframe src="${embed}" allow="autoplay;fullscreen" allowfullscreen loading="lazy"></iframe>
+        <button class="v-close" onclick="closeV('${sid}')" title="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="v-body">
+        <span class="tag tag-red">${p.type||'Film'}</span>
+        <h3 class="v-title">${p.title}</h3>
+        <p class="v-desc">${p.description}</p>
+        ${p.role?`<p class="v-role">${p.role}</p>`:''}
+      </div>
+      <div class="v-meta">
+        <span class="v-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${p.duration||'—'}</span>
+        <span class="v-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/></svg>${p.year||'2025'}</span>
+        <span class="v-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${src}</span>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+function playV(id){
+  document.getElementById('th-'+id).style.display='none';
+  document.getElementById('if-'+id).classList.add('active');
+}
+function closeV(id){
+  const fw=document.getElementById('if-'+id);
+  const ifr=fw.querySelector('iframe');
+  const s=ifr.src; ifr.src=''; ifr.src=s;
+  fw.classList.remove('active');
+  document.getElementById('th-'+id).style.display='';
+}
+
+(function init(){
+  allVideos=g('ce_video',[]);
+  // Build filter buttons from available types
+  const types=[...new Set(allVideos.filter(p=>p.status==='published').map(p=>p.type).filter(Boolean))];
+  const fr=document.getElementById('filterRow');
+  const count=fr.querySelector('.port-count');
+  types.forEach(t=>{
+    const btn=document.createElement('button');
+    btn.className='filter-btn'; btn.textContent=t; btn.dataset.filter=t;
+    btn.onclick=function(){ filterVideos(t,this); };
+    fr.insertBefore(btn,count);
+  });
+  renderVideos();
+})();
+
+window.addEventListener('scroll',()=>{ document.getElementById('mainNav').classList.toggle('nav-scrolled',window.scrollY>40); },{passive:true});
+</script>
+</body>
+</html>
